@@ -31,7 +31,7 @@ deskpi_create_file() {
 #### Create User Lib/Bin Directory
 ############################
 
-echo "DeskPi Fan control script installation Start." 
+echo "DeskPi Fan control script installation Start."
 
 if [ ! -d "/storage/user" ] ; then
 	mkdir -p $userlibrary
@@ -391,18 +391,18 @@ echo "Successfully Created the Uninstall Script"
 ################### Finish Up Install Script ###################
 ################################################################
 
-echo "DeskPi Services and Daemons have been built." 
+echo "DeskPi Services and Daemons have been built."
 echo "Installation of Deskpi Services and Daemons have Successfully finished"
 
 ############################
 #######Stop Services########
 ############################
 
-echo "DeskPi Service Load Modules." 
+echo "DeskPi Service Load Modules."
 
 systemctl daemon-reload
 systemctl enable $daemonname.service
-systemctl start $daemonname.service 
+systemctl start $daemonname.service
 systemctl daemon-reload
 systemctl enable $daemonname-poweroff.service
 systemctl start $daemonname-poweroff.service
@@ -413,9 +413,13 @@ echo "Deskpi Service Loaded Modules Correctly"
 #########Exit Code##########
 ############################
 
-echo "DeskPi Fan Control and PowerOff Service installed Successfully." 
+echo "---------------------------------------------------------------"
+echo "DeskPi Fan Control and PowerOff Service installed Successfully."
 echo "System requires a reboot for settings to take effect."
+echo "---------------------------------------------------------------"
+echo "---------------------------------------------------------------"
 echo "After Reboot has finished, reconnect and run"
 echo '"./user/bin/deskpi-config" to finish setting everything up'
+echo "---------------------------------------------------------------"
 sleep 5
 sync
