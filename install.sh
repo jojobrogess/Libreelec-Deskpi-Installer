@@ -14,6 +14,11 @@ defaultdriver=/storage/user/bin/$daemonname-fancontrol.py
 uninstall=/storage/user/bin/$daemonname-uninstall
 ################################################################
 ################################################################
+############################
+#C/D to Home and Create Create
+############################
+
+cd ~/
 
 deskpi_create_file() {
 	if [ -f $1 ]; then
@@ -84,13 +89,21 @@ echo '		sh -c "rm -f /storage/user/bin/deskpi.conf"' >> $daemonconfig
 echo '	fi' >> $daemonconfig
 echo '	touch /storage/user/bin/deskpi.conf' >> $daemonconfig
 echo '	chmod 777 /storage/user/bin/deskpi.conf' >> $daemonconfig
+echo '  echo "-----------------------------------------------------------------"' >> $daemonconfig
+echo '  echo "----------------- Custom Variable Fan Speed Tool ----------------"' >> $daemonconfig
+echo '  echo "-----------------------------------------------------------------"' >> $daemonconfig
 echo '	echo "The following allows you to control the fan speed according to"' >> $daemonconfig
 echo '	echo "the temperature and fan speed you define."' >> $daemonconfig
+echo '  echo "-----------------------------------------------------------------"' >> $daemonconfig
 echo '	echo "You  will need to input 4 different temperature thresholds"' >> $daemonconfig
 echo '	echo "(for example: 30, 40, 50, 60)"' >> $daemonconfig
-echo '	echo "And 4 PWM values of different speeds parameters"' >> $daemonconfig
+echo '  echo "-----------------------------------------------------------------"' >> $daemonconfig
+echo '	echo "You will ALSO need to input 4 different Fan Speeds."' >> $daemonconfig
 echo '	echo "(for example 25, 50, 75, 100, these are the default values)"' >> $daemonconfig
-echo '  echo "You can define the speed level during 0-100."' >> $daemonconfig
+echo '  echo "You can define the speed level from 0-100."' >> $daemonconfig
+echo '  echo "PLEASE NOTE: setting the fan speed to below 50 can cause the"' >> $daemonconfig
+echo '  echo "Fan to produce a rattling sound."' >> $daemonconfig
+echo '  echo "-----------------------------------------------------------------"' >> $daemonconfig
 echo '	for i in `seq 1 4`;' >> $daemonconfig
 echo '	do' >> $daemonconfig
 echo "	echo -e '\e[32;40mCurrent CPU Temperature:\e[0m \e[31;40m`vcgencmd measure_temp|sed -e "s/temp=//" -e "s/\..*'/ /"`\e[0m\n'" >> $daemonconfig
@@ -103,7 +116,9 @@ echo '	echo "Configuration setting saved to: /storage/user/bin/deskpi.conf"' >> 
 echo '}' >> $daemonconfig
 echo '' >> $daemonconfig
 echo 'echo "-----------------------------------------------------------------"' >> $daemonconfig
-echo 'echo "Welcome to the LIBREELEC-Deskpi Fan Speed Configuration File"' >> $daemonconfig
+echo 'echo "-----------------------------------------------------------------"' >> $daemonconfig
+echo 'echo "- Welcome to the LIBREELEC-Deskpi Fan Speed Configuration Tool -"' >> $daemonconfig
+echo 'echo "-----------------------------------------------------------------"' >> $daemonconfig
 echo 'echo "-----------------------------------------------------------------"' >> $daemonconfig
 echo 'echo "Please select the Fan Speed level you want or Enable variable "' >> $daemonconfig
 echo 'echo "Fan Speed, to set the Fan Speed according to Cpu Temperature."' >> $daemonconfig
@@ -117,6 +132,7 @@ echo 'echo "5 - Set the Fan Speed to 100%"' >> $daemonconfig
 echo 'echo "6 - Turn off the Fan"' >> $daemonconfig
 echo 'echo "7 - Enable default Variable Fan Speed Control"' >> $daemonconfig
 echo 'echo "8 - Create custom config Fan Speed according to Cpu Temperature"' >> $daemonconfig
+echo 'echo "9 - Exit Deskpi-Config Utility"' >> $daemonconfig
 echo 'echo "-----------------------------------------------------------------"' >> $daemonconfig
 echo 'echo "Input Number and Press Enter."' >> $daemonconfig
 echo 'read -p "Your choice:" levelNumber' >> $daemonconfig
@@ -152,15 +168,19 @@ echo '	   sh -c "echo pwm_000 > $serial_port"' >> $daemonconfig
 echo '	   echo "Fan has been turned off."' >> $daemonconfig
 echo '	   ;;' >> $daemonconfig
 echo '	7) ' >> $daemonconfig
-echo '	   echo "Enabled default variable fan speed values"' >> $daemonconfig
+echo '	   echo "Enabled Default Variable Fan Speed values"' >> $daemonconfig
 echo '	   echo "Default values are located at (/storage/user/bin/deskpi-fancontrol.py)"' >> $daemonconfig
 echo '	   systemctl stop deskpi.service &' >> $daemonconfig
 echo '	   ;;' >> $daemonconfig
 echo '	8) ' >> $daemonconfig
-echo '	   echo "Enabled Custom variable fan speed according to cpu temperature"' >> $daemonconfig
+echo '	   echo "Enabled Custom variable Fan Speed according to CPU Temperature"' >> $daemonconfig
 echo '	   systemctl stop deskpi.service & ' >> $daemonconfig
 echo '	   set_config' >> $daemonconfig
 echo '	   systemctl start deskpi.service & ' >> $daemonconfig
+echo '	   ;;' >> $daemonconfig
+echo '  9)' >> $daemonconfig
+echo '	   echo "Exiting Deskpi-Config"' >> $daemonconfig
+echo '	   echo "Have a Great Day!"' >> $daemonconfig
 echo '	   ;;' >> $daemonconfig
 echo '	*) ' >> $daemonconfig
 echo '	   echo "Looks like you input the wrong number"' >> $daemonconfig
@@ -232,7 +252,7 @@ echo 'After=multi-user.target' >> $daemonfanservice
 echo '[Service]' >> $daemonfanservice
 echo 'Type=simple' >> $daemonfanservice
 echo 'RemainAfterExit=no' >> $daemonfanservice
-echo 'ExecStart=/bin/sh -c ". /etc/profile; exec /usr/bin/python /storage/user/bin/deskpi-fancontrol.py; exec /storage/user/bin/deskpi.conf' >> $daemonfanservice
+echo 'ExecStart=/bin/sh -c ". /etc/profile; exec /usr/bin/python /storage/user/bin/deskpi-fancontrol.py; exec /storage/user/bin/deskpi.conf"' >> $daemonfanservice
 echo '[Install]' >> $daemonfanservice
 echo 'WantedBy=multi-user.target' >> $daemonfanservice
 
@@ -325,7 +345,7 @@ echo 'systemctl disable $daemonname.service 2&>/dev/null' >> $uninstall
 echo 'systemctl stop $daemonname.service  2&>/dev/null' >> $uninstall
 echo 'systemctl disable $daemonname-poweroff.service 2&>/dev/null' >> $uninstall
 echo 'systemctl stop $daemonname-poweroff.service 2&>/dev/null' >> $uninstall
-echo 'echo "Successfully Disabled DeskPi Fan Control and PowerOff Service.' >> $uninstall
+echo 'echo "Successfully Disabled DeskPi Fan Control and PowerOff Service."' >> $uninstall
 echo '' >> $uninstall
 echo 'echo "Remove DeskPi Fan Control and PowerOff Service."' >> $uninstall
 echo 'rm -f  /storage/.config/system.d/$daemonname-poweroff.service 2&>/dev/null' >> $uninstall
@@ -336,15 +356,24 @@ echo 'rm -f /storage/user/bin/deskpi-config 2&>/dev/null' >> $uninstall
 echo 'rm -f /storage/user/bin/deskpi.conf 2&>/dev/null' >> $uninstall
 echo 'echo "Successfully Uninstalled DeskPi Driver."' >> $uninstall
 echo '' >> $uninstall
-echo 'echo "Remove userfiles"' >> $uninstall
+echo 'echo "Attempt to Remove User Files."' >> $uninstall
 echo 'rm -f $daemonconfig' >> $uninstall
 echo 'rm -f /storage/user/bin/deskpi.conf' >> $uninstall
-echo 'echo "Removed userfiles"' >> $uninstall
-echo 'echo "Try to Remove Install Files"' >> $uninstall
-echo 'if [ -d "/storage/deskpi-ERno" ] ; then' >> $uninstall
-echo 'rm -f /storage/deskpi-ERno' >> $uninstall
+echo 'echo "Successfully Attempted to Removed User Files."' >> $uninstall
+echo '' >> $uninstall
+echo 'echo "Attempt to Remove Install Files."' >> $uninstall
+echo 'if [ -d "/storage/LIBREELEC-Deskpi-Installer-main" ] ; then' >> $uninstall
+echo 'rm -f /storage/LIBREELEC-Deskpi-Installer-main' >> $uninstall
 echo 'fi' >> $uninstall
-echo 'echo "If Install Files were found, they are deleted"' >> $uninstall
+echo 'echo "Successfully Attempted to Remove Install Files."' >> $uninstall
+echo '' >> $uninstall
+echo 'echo "Attempt to Remove Install Zip"' >> $uninstall
+echo 'if [ -f "/storage/main.zip" ] ; then' >> $uninstall
+echo 'rm -f /storage/main.zip' >> $uninstall
+echo 'fi' >> $uninstall
+echo 'echo "Sucessfully Attempted to Remove Install Zip."' >> $uninstall
+echo 'echo "If Install Files were found, they were deleted."' >> $uninstall
+echo '' >> $uninstall
 echo 'sleep 5' >> $uninstall
 echo 'echo "Going to attempt to kill myself now..."' >> $uninstall
 echo 'sleep 2' >> $uninstall
@@ -387,6 +416,6 @@ echo "Deskpi Service Loaded Modules Correctly"
 echo "DeskPi Fan Control and PowerOff Service installed Successfully." 
 echo "System requires a reboot for settings to take effect."
 echo "After Reboot has finished, reconnect and run"
-echo "./user/bin/deskpi-config to finish setting everything up"
+echo '"./user/bin/deskpi-config" to finish setting everything up'
 sleep 5
 sync
