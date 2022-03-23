@@ -52,13 +52,14 @@ fi
 if [ "$confirm" != "Y" ]
 then
         echo "Skipping Pyserial Installation"
-        echo " NOT smart btw."
-        echo "Files will have to be updated"
-        echo "with new pyserial/serial locations."
+        echo "-e '\e[32;40mNOT smart btw.\e[0m"
+        echo "Files will have to be updated with"
+        echo "New pyserial/serial locations."
         echo "Before the Deskpi Fan Services"
         echo "will work."
         echo "GL bud"
         sleep 10
+        echo "You can re-run installer to try again."
 fi
 
 ############################
@@ -388,11 +389,18 @@ echo "Create Uninstall Script"
 deskpi_create_file $uninstall
 
 echo '#!/bin/bash' >> $uninstall
-echo '# uninstall deskpi script ' >> $uninstall
 echo 'daemonname='deskpi'' >> $uninstall
-echo 'daemonconfig=/storage/user/bin/deskpi-config' >> $uninstall
+echo 'echo "------------------------------------------"' >> $uninstall
+echo 'echo "------- Deskpi UnInstallation Tool -------"' >> $uninstall
+echo 'echo "------------------------------------------"' >> $uninstall
+echo 'echo -n "Press Y to UnInstall Deskpi and Services:"' >> $uninstall
+echo 'read -n 1 confirm' >> $uninstall
 echo '' >> $uninstall
+echo 'if [ "$confirm" = "y" ]' >> $uninstall
+echo 'then' >> $uninstall
 echo 'echo "Uninstalling DeskPi Services."' >> $uninstall
+echo 'cd ~/' >> $uninstall
+echo '' >> $uninstall
 echo 'sleep 1' >> $uninstall
 echo 'echo "Remove otg_mode=1,dtoverlay=dwc2,dr_mode=host,dtoverlay=gpio-ir,gpio_pin=17 from /flash/config.txt file"' >> $uninstall
 echo '' >> $uninstall
@@ -404,7 +412,12 @@ echo "	    sed -i 'otg_mode=1,dtoverlay=dwc2,dr_mode=host,dtoverlay=gpio-ir,gpio
 echo '# Probably not a good idea to just delete the last line rather than find and delete.' >> $uninstall
 echo '	mount -o remount,ro /flash' >> $uninstall
 echo 'fi' >> $uninstall
-echo 'echo "Removed otg_mode=1 configure from /flash/config.txt file"' >> $uninstall
+echo 'echo "Removed"' >> $uninstall
+echo 'echo "otg_mode=1,dtoverlay=dwc2,dr_mode=host,"' >> $uninstall
+echo 'echo "USB Boot"' >> $uninstall
+echo 'echo "dtoverlay=gpio-ir,gpio_pin=17"' >> $uninstall
+echo 'echo "IR Reciever"' >> $uninstall
+echo 'echo "configure from /flash/config.txt file"' >> $uninstall
 echo '' >> $uninstall
 echo 'echo "Diable DeskPi Fan Control and PowerOff Service."' >> $uninstall
 echo 'systemctl disable $daemonname.service 2&>/dev/null' >> $uninstall
@@ -416,29 +429,16 @@ echo '' >> $uninstall
 echo 'echo "Remove DeskPi Fan Control and PowerOff Service."' >> $uninstall
 echo 'rm -f  /storage/.config/system.d/$daemonname-poweroff.service 2&>/dev/null' >> $uninstall
 echo 'rm -f  /storage/.config/system.d/$daemonname.service  2&>/dev/null' >> $uninstall
-echo 'rm -f /storage/user/bin/deskpi-fancontrol.py 2&>/dev/null' >> $uninstall
-echo 'rm -f /storage/user/bin/deskpi-poweroff.py 2&>/dev/null' >> $uninstall
-echo 'rm -f /storage/user/bin/deskpi-config 2&>/dev/null' >> $uninstall
-echo 'rm -f /storage/user/bin/deskpi.conf 2&>/dev/null' >> $uninstall
-echo 'echo "Successfully Uninstalled DeskPi Driver."' >> $uninstall
+echo 'rm -f /storage/user/bin/$daemonname-fancontrol.py 2&>/dev/null' >> $uninstall
+echo 'rm -f /storage/user/bin/$daemonname-poweroff.py 2&>/dev/null' >> $uninstall
+echo 'rm -f /storage/user/bin/$daemonname-config 2&>/dev/null' >> $uninstall
+echo 'rm -f /storage/user/bin/$daemonname.conf 2&>/dev/null' >> $uninstall
+echo 'echo "Successfully Uninstalled Deskpi Driver."' >> $uninstall
 echo '' >> $uninstall
 echo 'echo "Attempt to Remove User Files."' >> $uninstall
-echo 'rm -f $daemonconfig' >> $uninstall
-echo 'rm -f /storage/user/bin/deskpi.conf' >> $uninstall
+echo 'rm -f /storage/user/bin/$daemonname-config' >> $uninstall
+echo 'rm -f /storage/user/bin/$daemonname.conf' >> $uninstall
 echo 'echo "Successfully Attempted to Removed User Files."' >> $uninstall
-echo '' >> $uninstall
-echo 'echo "Attempt to Remove Install Files."' >> $uninstall
-echo 'if [ -d "/storage/LIBREELEC-Deskpi-Installer-main" ] ; then' >> $uninstall
-echo 'rm -f /storage/LIBREELEC-Deskpi-Installer-main' >> $uninstall
-echo 'fi' >> $uninstall
-echo 'echo "Successfully Attempted to Remove Install Files."' >> $uninstall
-echo '' >> $uninstall
-echo 'echo "Attempt to Remove Install Zip"' >> $uninstall
-echo 'if [ -f "/storage/main.zip" ] ; then' >> $uninstall
-echo 'rm -f /storage/main.zip' >> $uninstall
-echo 'fi' >> $uninstall
-echo 'echo "Sucessfully Attempted to Remove Install Zip."' >> $uninstall
-echo 'echo "If Install Files were found, they were deleted."' >> $uninstall
 echo '' >> $uninstall
 echo 'sleep 5' >> $uninstall
 echo 'echo "Going to attempt to kill myself now..."' >> $uninstall
@@ -447,6 +447,12 @@ echo 'echo "wish me luck"' >> $uninstall
 echo 'sleep 2' >> $uninstall
 echo 'echo "?"' >> $uninstall
 echo 'rm -- "$0"' >> $uninstall
+echo 'fi' >> $uninstall
+echo '' >> $uninstall
+echo 'if [ "$confirm" != "Y" ]' >> $uninstall
+echo 'then' >> $uninstall
+echo '	echo "Cancelled Uninstall Script' >> $uninstall
+echo 'fi' >> $uninstall
 echo '' >> $uninstall
 
 chmod 755 $uninstall
@@ -473,14 +479,27 @@ systemctl daemon-reload
 systemctl enable $daemonname.service
 systemctl start $daemonname-poweroff.service
 
-echo "Systemctl error is because device /dev/ttyUSB0"
-echo "has not been created yet, device needs reboot"
+echo -e "\e[31;40mSystemctl error\e[0m is because device\e[33;40m /dev/ttyUSB0\e[0m"
+echo "has not been created yet, your device needs to reboot."
 
 echo "Deskpi Services Loaded Correctly "
 
 ############################
 #########Exit Code##########
 ############################
+
+echo "Attempt to Remove Install Files."
+if [ -d "/storage/LIBREELEC-Deskpi-Installer-main" ] ; then
+rm -f /storage/LIBREELEC-Deskpi-Installer-main
+fi
+echo "Successfully Attempted to Remove Install Files."
+
+echo "Attempt to Remove Install Zip"
+if [ -f "/storage/main.zip" ] ; then
+rm -f /storage/main.zip
+fi
+echo "Sucessfully Attempted to Remove Install Zip."
+echo "If Install Files were found, they were deleted."
 
 echo "---------------------------------------------------------------"
 echo "DeskPi Fan Control and PowerOff Service installed Successfully."
