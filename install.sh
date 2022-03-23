@@ -14,11 +14,65 @@ defaultdriver=/storage/user/bin/$daemonname-fancontrol.py
 uninstall=/storage/user/bin/$daemonname-uninstall
 ################################################################
 ################################################################
+echo "------------------------------------------"
+echo "------- Pyserial Installation Tool -------"
+echo "------------------------------------------"
+echo " Pyserial is a dependency of this addon."
+echo "------------------------------------------"
+echo "As such, it NEEDS to be installed for"
+echo "the services to work correctly."
+echo -n "Press Y to Install Pyserial:"
+read -n 1 confirm
+
+if [ "$confirm" = "y" ]
+then
+        confirm="Y"
+        echo "Downloading pyserial to Home Directory"
+        echo "/storage/"
+		cd ~/
+		wget https://github.com/jojobrogess/pyserial/archive/refs/tags/v3.5.tar.gz -O pyserial-3.5.tar.gz
+
+		echo "Create a temp dir to install pyserial in"
+		export tmp_dir=~/install_temp/
+		mkdir $tmp_dir
+		cd $tmp_dir
+
+		echo "Extract and install pyserial"
+		tar -xvf ~/pyserial*.tar.gz
+		cd pyserial*
+		python setup.py install --user
+
+		echo "Clean-up Pyserial Installation Files"
+		cd ~/
+		rm $tmp_dir/ -Rf
+		rm pyserial-3.5.tar.gz
+		echo "Pyserial Has be Sucessfully Installed"
+fi
+
+if [ "$confirm" != "Y" ]
+then
+        echo "Skipping Pyserial Installation"
+        echo " NOT smart btw."
+        echo "Files will have to be updated"
+        echo "with new pyserial/serial locations."
+        echo "Before the Deskpi Fan Services"
+        echo "will work."
+        echo "GL bud"
+        sleep 10
+fi
+
 ############################
 #C/D to Home and Create Create
 ############################
 
+echo "Okay the script has to go home now..."
 cd ~/
+sleep 3
+
+############################
+####### Script Create ######
+############################
+
 
 deskpi_create_file() {
 	if [ -f $1 ]; then
@@ -28,7 +82,7 @@ deskpi_create_file() {
 }
 
 ############################
-#### Create User Lib/Bin Directory
+#Create User Lib/Bin Directory
 ############################
 
 echo "DeskPi Fan control script installation Start."
@@ -404,7 +458,6 @@ systemctl daemon-reload
 systemctl enable $daemonname.service
 systemctl start $daemonname.service
 systemctl daemon-reload
-systemctl enable $daemonname-poweroff.service
 systemctl start $daemonname-poweroff.service
 
 echo "Deskpi Service Loaded Modules Correctly"
