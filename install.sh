@@ -65,9 +65,21 @@ fi
 #C/D to Home and Create Create
 ############################
 
-echo "Okay the script has to go home now..."
+echo "Okay the script has to continue on now..."
 cd ~/
 sleep 3
+
+################################################################
+################## START INSTALLATION SCRIPT ###################
+################################################################
+
+echo "---------------------------------------------------------------"
+echo "---------------------------------------------------------------"
+echo "------------------- START INSTALL SCRIPT ----------------------"
+echo "---------------------------------------------------------------"
+echo "---------------------------------------------------------------"
+echo "this should go quick.."
+sleep 5
 
 ############################
 ####### Script Create ######
@@ -391,7 +403,7 @@ echo '	mount -o remount,rw /flash' >> $uninstall
 echo "	    sed -i 'otg_mode=1,dtoverlay=dwc2,dr_mode=host,dtoverlay=gpio-ir,gpio_pin=17' /flash/config.txt" >> $uninstall
 echo '# Probably not a good idea to just delete the last line rather than find and delete.' >> $uninstall
 echo '	mount -o remount,ro /flash' >> $uninstall
-echo 'echo "fi"' >> $uninstall
+echo 'fi' >> $uninstall
 echo 'echo "Removed otg_mode=1 configure from /flash/config.txt file"' >> $uninstall
 echo '' >> $uninstall
 echo 'echo "Diable DeskPi Fan Control and PowerOff Service."' >> $uninstall
@@ -458,9 +470,13 @@ systemctl daemon-reload
 systemctl enable $daemonname.service
 systemctl start $daemonname.service
 systemctl daemon-reload
+systemctl enable $daemonname.service
 systemctl start $daemonname-poweroff.service
 
-echo "Deskpi Service Loaded Modules Correctly"
+echo "Systemctl error is because device /dev/ttyUSB0"
+echo "has not been created yet, device needs reboot"
+
+echo "Deskpi Services Loaded Correctly "
 
 ############################
 #########Exit Code##########
