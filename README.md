@@ -38,17 +38,13 @@ Connect via SSH. The default username for LibreElec is root while the default pa
 
 Type this:
 
-`wget ###`
+`wget https://github.com/jojobrogess/Libreelec-Deskpi-Installer/archive/refs/heads/main.zip`
 
-`unzip .zip`
+`unzip main.zip`
 
-`chmod +x /install.sh && chmod +x /installpyserial.sh`
+`chmod +x Libreelec-Deskpi-Installer-main/install.sh`
 
-`.//installpyserial.sh`
-Wait for it to install.
-
-Then:
-`.//install.sh`
+`./Libreelec-Deskpi-Installer-main/install.sh`
 
 ************************************************************************************************************************************ 
    
