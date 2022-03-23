@@ -52,7 +52,7 @@ fi
 if [ "$confirm" != "Y" ]
 then
         echo "Skipping Pyserial Installation"
-        echo "-e '\e[32;40mNOT smart btw.\e[0m"
+        echo -e '\e[32;40mNOT smart btw.\e[0m'
         echo "Files will have to be updated with"
         echo "New pyserial/serial locations."
         echo "Before the Deskpi Fan Services"
@@ -489,8 +489,8 @@ echo "Deskpi Services Loaded Correctly "
 ############################
 
 echo "Attempt to Remove Install Files."
-if [ -d "/storage/LIBREELEC-Deskpi-Installer-main" ] ; then
-rm -f /storage/LIBREELEC-Deskpi-Installer-main
+if [ -d "/storage/Libreelec-Deskpi-Installer-main" ] ; then
+rm -rf /storage/Libreelec-Deskpi-Installer-main
 fi
 echo "Successfully Attempted to Remove Install Files."
 
