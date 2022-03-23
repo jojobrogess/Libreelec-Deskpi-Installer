@@ -52,7 +52,7 @@ fi
 if [ "$confirm" != "Y" ]
 then
         echo "Skipping Pyserial Installation"
-        echo -e '\e[32;40mNOT smart btw.\e[0m'
+        echo -e '\e[31;40mNOT smart btw.\e[0m'
         echo "Files will have to be updated with"
         echo "New pyserial/serial locations."
         echo "Before the Deskpi Fan Services"
@@ -402,22 +402,6 @@ echo 'echo "Uninstalling DeskPi Services."' >> $uninstall
 echo 'cd ~/' >> $uninstall
 echo '' >> $uninstall
 echo 'sleep 1' >> $uninstall
-echo 'echo "Remove otg_mode=1,dtoverlay=dwc2,dr_mode=host,dtoverlay=gpio-ir,gpio_pin=17 from /flash/config.txt file"' >> $uninstall
-echo '' >> $uninstall
-echo 'PIINFO=$(cat /flash/config.txt | grep 'otg_mode=1')' >> $uninstall
-echo 'if [ -n "$PIINFO" ]' >> $uninstall
-echo 'then' >> $uninstall
-echo '	mount -o remount,rw /flash' >> $uninstall
-echo "	    sed -i 'otg_mode=1,dtoverlay=dwc2,dr_mode=host,dtoverlay=gpio-ir,gpio_pin=17' /flash/config.txt" >> $uninstall
-echo '# Probably not a good idea to just delete the last line rather than find and delete.' >> $uninstall
-echo '	mount -o remount,ro /flash' >> $uninstall
-echo 'fi' >> $uninstall
-echo 'echo "Removed"' >> $uninstall
-echo 'echo "otg_mode=1,dtoverlay=dwc2,dr_mode=host,"' >> $uninstall
-echo 'echo "USB Boot"' >> $uninstall
-echo 'echo "dtoverlay=gpio-ir,gpio_pin=17"' >> $uninstall
-echo 'echo "IR Reciever"' >> $uninstall
-echo 'echo "configure from /flash/config.txt file"' >> $uninstall
 echo '' >> $uninstall
 echo 'echo "Diable DeskPi Fan Control and PowerOff Service."' >> $uninstall
 echo 'systemctl disable $daemonname.service 2&>/dev/null' >> $uninstall
@@ -445,13 +429,14 @@ echo 'echo "Going to attempt to kill myself now..."' >> $uninstall
 echo 'sleep 2' >> $uninstall
 echo 'echo "wish me luck"' >> $uninstall
 echo 'sleep 2' >> $uninstall
+echo 'cd user/bin/' >> $uninstall
 echo 'echo "?"' >> $uninstall
 echo 'rm -- "$0"' >> $uninstall
 echo 'fi' >> $uninstall
 echo '' >> $uninstall
 echo 'if [ "$confirm" != "Y" ]' >> $uninstall
 echo 'then' >> $uninstall
-echo '	echo "Cancelled Uninstall Script' >> $uninstall
+echo '	echo "Cancelled Uninstall Script"' >> $uninstall
 echo 'fi' >> $uninstall
 echo '' >> $uninstall
 
