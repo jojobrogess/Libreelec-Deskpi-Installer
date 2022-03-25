@@ -145,6 +145,8 @@ echo '# communicates with the Raspberry Pi to get the signal for Fan Speed adjus
 echo 'sys=/storage/.kodi/addons/virtual.rpi.tools/lib' >> $daemonconfig
 echo 'serial=/storage/.kodi/addons/script.module.pyserial/lib/' >> $daemonconfig
 echo 'serial_port=/dev/ttyUSB0' >> $daemonconfig
+echo 'TEMP=/sys/class/thermal/thermal_zone0/temp' >> $daemonconfig
+echo 'CPU=`head -n 1 $TEMP`' >> $daemonconfig
 echo '' >> $daemonconfig
 echo '# Stop deskpi.service so that user can define the speed level.' >> $daemonconfig
 echo 'systemctl stop deskpi.service' >> $daemonconfig
@@ -173,7 +175,7 @@ echo '  echo "Fan to produce a rattling sound."' >> $daemonconfig
 echo '  echo "-----------------------------------------------------------------"' >> $daemonconfig
 echo '	for i in `seq 1 4`;' >> $daemonconfig
 echo '	do' >> $daemonconfig
-echo "	echo -e '\e[32;40mCurrent CPU Temperature:\e[0m \e[31;40m`vcgencmd measure_temp|sed -e "s/temp=//" -e "s/\..*'/ /"`\e[0m\n'" >> $daemonconfig
+echo "	echo -e '\e[32;40mCurrent CPU Temperature:\e[0m \e[31;40m$((CPU/1000))'C\e[0m\n'" >> $daemonconfig
 echo '	read -p  "Temperature_threshold_$i:" temp' >> $daemonconfig
 echo '        read -p  "Fan_Speed level_$i:" fan_speed_level' >> $daemonconfig
 echo '	sh -c "echo $temp" >> /storage/user/bin/deskpi.conf' >> $daemonconfig
