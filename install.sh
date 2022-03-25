@@ -175,7 +175,7 @@ echo '  echo "Fan to produce a rattling sound."' >> $daemonconfig
 echo '  echo "-----------------------------------------------------------------"' >> $daemonconfig
 echo '	for i in `seq 1 4`;' >> $daemonconfig
 echo '	do' >> $daemonconfig
-echo "	echo -e '\e[32;40mCurrent CPU Temperature:\e[0m \e[31;40m$((CPU/1000))'C\e[0m\n'" >> $daemonconfig
+echo '	echo -e "\e[32;40mCurrent CPU Temperature:\e[0m \e[31;40m$((CPU/1000))C\e[0m\n"' >> $daemonconfig
 echo '	read -p  "Temperature_threshold_$i:" temp' >> $daemonconfig
 echo '        read -p  "Fan_Speed level_$i:" fan_speed_level' >> $daemonconfig
 echo '	sh -c "echo $temp" >> /storage/user/bin/deskpi.conf' >> $daemonconfig
