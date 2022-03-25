@@ -1,0 +1,15 @@
+{
+        "name" : "Fan",
+        "script" : "fan.py",
+        "args" :
+        {
+		"gpio-mode" : "BCM",
+		"pin" : 24,
+		"wait_time" : 1,
+		"fan_min" : 20,
+		"pwm_freq" : 25,
+		"temp_steps" : [50, 70],
+		"speed_steps" : [0, 100],
+		"hysteresis" : 1
+        }
+}
