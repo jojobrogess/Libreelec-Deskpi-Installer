@@ -275,17 +275,17 @@ echo "sys.path.append('/storage/.local/lib/python3.8/site-packages/')" >> $defau
 echo 'import serial as serial' >> $defaultdriver
 echo 'import time' >> $defaultdriver
 echo 'import subprocess' >> $defaultdriver
-echo '' >>$defaultdriver
-echo "port = '/dev/ttyUSB0'" >>$defaultdriver
-echo "baudrate = '9600'" >>$defaultdriver
-echo 'ser = serial.Serial(port, baudrate, timeout=30)' >>$defaultdriver
-echo '' >>$defaultdriver
+echo '' >> $defaultdriver
+echo "port = '/dev/ttyUSB0'" >> $defaultdriver
+echo "baudrate = '9600'" >> $defaultdriver
+echo 'ser = serial.Serial(port, baudrate, timeout=30)' >> $defaultdriver
+echo '' >> $defaultdriver
 echo 'try:' >> $defaultdriver
 echo '    while True:' >> $defaultdriver
 echo '        if ser.isOpen():' >> $defaultdriver
 echo "            cpu_temp = subprocess.getoutput('vcgencmd measure_temp|awk -F\'=\' \'{print \$2\'}')" >> $defaultdriver
 echo "            cpu_temp=int(cpu_temp.split('.')[0])" >> $defaultdriver
-echo '' >>$defaultdriver
+echo '' >> $defaultdriver
 echo '            if cpu_temp < 35:' >> $defaultdriver
 echo "                ser.write(b'pwm_000')" >> $defaultdriver
 echo '            elif cpu_temp > 35 and cpu_temp < 40:' >> $defaultdriver
@@ -296,7 +296,7 @@ echo '            elif cpu_temp > 45 and cpu_temp < 50:' >> $defaultdriver
 echo "                ser.write(b'pwm_085')" >> $defaultdriver
 echo '            elif cpu_temp > 50:' >> $defaultdriver
 echo "                ser.write(b'pwm_100')" >> $defaultdriver
-echo '' >>$defaultdriver
+echo '' >> $defaultdriver
 echo 'except KeyboardInterrupt:' >> $defaultdriver
 echo "    ser.write(b'pwm_000')" >> $defaultdriver
 echo '    ser.close()' >> $defaultdriver
