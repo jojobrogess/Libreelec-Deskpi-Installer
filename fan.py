@@ -48,40 +48,40 @@ if(len(speedSteps) != len(tempSteps)):
 
 try:
     while (1):
-        if ser.isOpen():
-        # Read CPU temperature
-        cpuTempFile = open("/sys/class/thermal/thermal_zone0/temp", "r")
-        cpuTemp = float(cpuTempFile.read()) / 1000
-        cpuTempFile.close()
+        if fan.isOpen():
+            # Read CPU temperature
+            cpuTempFile = open("/sys/class/thermal/thermal_zone0/temp", "r")
+            cpuTemp = float(cpuTempFile.read()) / 1000
+            cpuTempFile.close()
 
-        # Calculate desired fan speed
-        if(abs(cpuTemp-cpuTempOld > hyst)):
+            # Calculate desired fan speed
+            if(abs(cpuTemp-cpuTempOld > hyst)):
 
-            # Below first value, fan will run at min speed.
-            if(cpuTemp < tempSteps[0]):
-                fanSpeed = speedSteps[0]
+                # Below first value, fan will run at min speed.
+                if(cpuTemp < tempSteps[0]):
+                    fanSpeed = speedSteps[0]
 
-            # Above last value, fan will run at max speed
-            elif(cpuTemp >= tempSteps[len(tempSteps)-1]):
-                fanSpeed = speedSteps[len(tempSteps)-1]
+                # Above last value, fan will run at max speed
+                elif(cpuTemp >= tempSteps[len(tempSteps)-1]):
+                    fanSpeed = speedSteps[len(tempSteps)-1]
 
-            # If temperature is between 2 steps, fan speed is calculated by linear interpolation
-            else:
-                for i in range(0, len(tempSteps)-1):
-                    if((cpuTemp >= tempSteps[i]) and (cpuTemp < tempSteps[i+1])):
-                        fanSpeed = round((speedSteps[i+1]-speedSteps[i])/(tempSteps[i+1]-tempSteps[i])*(cpuTemp-tempSteps[i])+speedSteps[i],1)
+                # If temperature is between 2 steps, fan speed is calculated by linear interpolation
+                else:
+                    for i in range(0, len(tempSteps)-1):
+                        if((cpuTemp >= tempSteps[i]) and (cpuTemp < tempSteps[i+1])):
+                            fanSpeed = round((speedSteps[i+1]-speedSteps[i])/(tempSteps[i+1]-tempSteps[i])*(cpuTemp-tempSteps[i])+speedSteps[i],1)
 
-            if((fanSpeed != fanSpeedOld)):
-                if((fanSpeed != fanSpeedOld) and ((fanSpeed >= FAN_MIN) or (fanSpeed == 0))):
-                    #fan.ChangeDutyCycle(fanSpeed)
-                    fan.write(b'fanSpeed')                    
-                    fanSpeedOld = fanSpeed
+                if((fanSpeed != fanSpeedOld)):
+                    if((fanSpeed != fanSpeedOld) and ((fanSpeed >= FAN_MIN) or (fanSpeed == 0))):
+                        #fan.ChangeDutyCycle(fanSpeed)
+                        fan.write(b'fanSpeed')                    
+                        fanSpeedOld = fanSpeed
 
-        # Wait until next refresh
-        time.sleep(WAIT_TIME)
+            # Wait until next refresh
+            time.sleep(WAIT_TIME)
 
 # If a keyboard interrupt occurs (ctrl + c)
 except(KeyboardInterrupt):
     print("Fan ctrl interrupted by keyboard")
-    ser.write(b'pwm_000')
-    ser.close()
+    fan.write(b'pwm_000')
+    fan.close()
