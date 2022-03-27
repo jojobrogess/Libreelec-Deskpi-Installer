@@ -1,46 +1,45 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
 
-import RPi.GPIO as GPIO
+import sys
+sys.path.append('/storage/.local/lib/python3.8/site-packages/')
+import serial as serial
 import json
 import time
 import os
-import sys
 
 # Configuration
 with open(os.path.join(sys.path[0], 'fan.json')) as f:
     data = json.load(f)
-FAN_PIN = data['args']['pin']
+
 WAIT_TIME = data['args']['wait_time']
 FAN_MIN = data['args']['fan_min']
-PWM_FREQ = data['args']['pwm_freq']
 tempSteps = data['args']['temp_steps']
 speedSteps = data['args']['speed_steps']
 hyst = data['args']['hysteresis']
 
-# FAN_PIN = 24            # BCM pin used to drive transistor's base
 # WAIT_TIME = 1           # [s] Time to wait between each refresh
 # FAN_MIN = 20            # [%] Fan minimum speed.
 # PWM_FREQ = 25           # [Hz] Change this value if fan has strange behavior
 
 # Configurable temperature and fan speed steps
-# tempSteps = [50, 70]    # [°C]
-# speedSteps = [0, 100]   # [%]
+# tempSteps = [30, 35]    # [°C]
+# speedSteps = [70, 100]   # [%]
 
-# Fan speed will change only of the difference of temperature is higher than hysteresis
+# Fan speed will change only if the difference of temperature is higher than hysteresis
 # hyst = 1
 
 # Setup GPIO pin
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(FAN_PIN, GPIO.OUT, initial=GPIO.LOW)
-fan = GPIO.PWM(FAN_PIN, PWM_FREQ)
-fan.start(0)
-
+#GPIO.setmode(GPIO.BCM)
+#GPIO.setup(FAN_PIN, GPIO.OUT, initial=GPIO.LOW)
+#fan = GPIO.PWM(FAN_PIN, PWM_FREQ)
+#fan.start(0)
+port = '/dev/ttyUSB0'
+baudrate = '9600'
+fan = serial.Serial(port, baudrate, timeout=30)
 
 i = 0
 cpuTempOld = 0
 fanSpeedOld = 0
-
 
 # We must set a speed value for each temperature step
 if(len(speedSteps) != len(tempSteps)):
@@ -49,6 +48,7 @@ if(len(speedSteps) != len(tempSteps)):
 
 try:
     while (1):
+        if ser.isOpen():
         # Read CPU temperature
         cpuTempFile = open("/sys/class/thermal/thermal_zone0/temp", "r")
         cpuTemp = float(cpuTempFile.read()) / 1000
@@ -73,15 +73,15 @@ try:
 
             if((fanSpeed != fanSpeedOld)):
                 if((fanSpeed != fanSpeedOld) and ((fanSpeed >= FAN_MIN) or (fanSpeed == 0))):
-                    fan.ChangeDutyCycle(fanSpeed)
+                    #fan.ChangeDutyCycle(fanSpeed)
+                    fan.write(b'fanSpeed')                    
                     fanSpeedOld = fanSpeed
 
         # Wait until next refresh
         time.sleep(WAIT_TIME)
 
-
-# If a keyboard interrupt occurs (ctrl + c), the GPIO is set to 0 and the program exits.
+# If a keyboard interrupt occurs (ctrl + c)
 except(KeyboardInterrupt):
     print("Fan ctrl interrupted by keyboard")
-    GPIO.cleanup()
-    sys.exit()
+    ser.write(b'pwm_000')
+    ser.close()

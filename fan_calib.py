@@ -1,31 +1,34 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
 
-import RPi.GPIO as GPIO
 import sys
+sys.path.append('/storage/.local/lib/python3.8/site-packages/')
+import serial as serial
 #import time
 #import os
 
-FAN_PIN = 24
 WAIT_TIME = 1
-PWM_FREQ = 25
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(FAN_PIN, GPIO.OUT, initial=GPIO.LOW)
+#GPIO.setmode(GPIO.BCM)
+#GPIO.setup(FAN_PIN, GPIO.OUT, initial=GPIO.LOW)#
 
-fan = GPIO.PWM(FAN_PIN, PWM_FREQ)
-fan.start(0)
+#fan = GPIO.PWM(FAN_PIN, PWM_FREQ)
+#fan.start(0)
+
+port = '/dev/ttyUSB0'
+baudrate = '9600'
+fan = serial.Serial(port, baudrate, timeout=30)
+
 i = 0
 
 hyst = 1
-tempSteps = [50, 70]
-speedSteps = [0, 100]
+tempSteps = [30, 35]
+speedSteps = [70, 100]
 cpuTempOld = 0
 
 try:
     while 1:
         fanSpeed = float(input("Fan Speed: "))
-        fan.ChangeDutyCycle(fanSpeed)
+        fan.write(b'fanSpeed')
 
 
 except(KeyboardInterrupt):
