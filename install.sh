@@ -144,8 +144,6 @@ echo '# pwm_100 means sending 100% PWM signal to MCU.The fan will run at 100% sp
 echo '#' >> $daemonconfig
 echo '# This is the serial port that connects the deskPi mainboard and' >> $daemonconfig
 echo '# communicates with the Raspberry Pi to get the signal for Fan Speed adjusting.' >> $daemonconfig
-echo 'sys=/storage/.kodi/addons/virtual.rpi.tools/lib' >> $daemonconfig
-echo 'serial=/storage/.kodi/addons/script.module.pyserial/lib/' >> $daemonconfig
 echo 'serial_port=/dev/ttyUSB0' >> $daemonconfig
 echo 'TEMP=/sys/class/thermal/thermal_zone0/temp' >> $daemonconfig
 echo 'CPU=`head -n 1 $TEMP`' >> $daemonconfig
@@ -195,9 +193,9 @@ echo 'echo "Please select the Fan Speed level you want or Enable variable "' >> 
 echo 'echo "Fan Speed, to set the Fan Speed according to Cpu Temperature."' >> $daemonconfig
 echo 'echo "Or create custom Variables for Fan Speeds according to Cpu Temps."' >> $daemonconfig
 echo 'echo "-----------------------------------------------------------------"' >> $daemonconfig
-echo 'echo "1 - Enable default Variable Fan Speed Control"' >> $daemonconfig
+echo 'echo "1 - Enable Default Variable Fan Speed Control"' >> $daemonconfig
 echo 'echo "2 - Create custom config Fan Speed according to Cpu Temperature"' >> $daemonconfig
-echo 'echo "3 - Create custom config Fan Speed according to Cpu Temperature"' >> $daemonconfig
+echo 'echo "3 - Enable Default Hysteresis Fan Speed Control"' >> $daemonconfig
 echo 'echo "5 - Set the Fan Speed to 50%"' >> $daemonconfig
 echo 'echo "6 - Set the Fan Speed to 65%"' >> $daemonconfig
 echo 'echo "7 - Set the Fan Speed to 75%"' >> $daemonconfig
@@ -345,15 +343,14 @@ echo "Create Fan Hysteresis Driver Daemon"
 
 deskpi_create_file $hysteresisdriver
 
-echo '#!/usr/bin/python' >> $hysteresisdriver
 echo 'import sys' >> $hysteresisdriver
-echo 'sys.path.append('/storage/.local/lib/python3.8/site-packages/')' >> $hysteresisdriver
+echo "sys.path.append('/storage/.local/lib/python3.8/site-packages/')" >> $hysteresisdriver
 echo 'import serial as serial' >> $hysteresisdriver
 echo 'import json' >> $hysteresisdriver
 echo 'import time' >> $hysteresisdriver
 echo 'import os' >> $hysteresisdriver
 echo '# Configuration' >> $hysteresisdriver
-echo 'with open(os.path.join(sys.path[0], 'fan.json')) as f:' >> $hysteresisdriver
+echo "with open(os.path.join(sys.path[0], 'deskpi.json')) as f:" >> $hysteresisdriver
 echo '    data = json.load(f)' >> $hysteresisdriver
 echo 'WAIT_TIME = data['args']['wait_time']' >> $hysteresisdriver
 echo 'FAN_MIN = data['args']['fan_min']' >> $hysteresisdriver
@@ -372,8 +369,8 @@ echo '    exit(0)' >> $hysteresisdriver
 echo 'try:' >> $hysteresisdriver
 echo '    while (1):' >> $hysteresisdriver
 echo '        if fan.isOpen():' >> $hysteresisdriver
-echo '            cpu_temp = subprocess.getoutput('vcgencmd measure_temp|awk -F\'=\' \'{print \$2\'}')' >> $hysteresisdriver
-echo '            cpu_temp=int(cpu_temp.split('.')[0])' >> $hysteresisdriver
+echo "            cpu_temp = subprocess.getoutput('vcgencmd measure_temp|awk -F\'=\' \'{print \$2\'}')" >> $hysteresisdriver
+echo "            cpu_temp=int(cpu_temp.split('.')[0])" >> $hysteresisdriver
 echo '            # Calculate desired fan speed' >> $hysteresisdriver
 echo '            if(abs(cpuTemp-cpuTempOld > hyst)):' >> $hysteresisdriver
 echo '                # Below first value, fan will run at min speed.' >> $hysteresisdriver
@@ -389,7 +386,7 @@ echo '                        if((cpuTemp >= tempSteps[i]) and (cpuTemp < tempSt
 echo '                            fanSpeed = round((speedSteps[i+1]-speedSteps[i])/(tempSteps[i+1]-tempSteps[i])*(cpuTemp-tempSteps[i])+speedSteps[i],1)' >> $hysteresisdriver
 echo '                if((fanSpeed != fanSpeedOld)):' >> $hysteresisdriver
 echo '                    if((fanSpeed != fanSpeedOld) and ((fanSpeed >= FAN_MIN) or (fanSpeed == 0))):' >> $hysteresisdriver
-echo '                        fanSpeed = bytes(str("pwm_%03d" % fanSpeed), 'utf-8')' >> $hysteresisdriver
+echo "                        fanSpeed = bytes(str(\"pwm_%03d\" % fanSpeed), 'utf-8')" >> $hysteresisdriver
 echo '                        fan.write(fanSpeed)                    ' >> $hysteresisdriver
 echo '                        fanSpeedOld = fanSpeed' >> $hysteresisdriver
 echo '            # Wait until next refresh' >> $hysteresisdriver
@@ -488,7 +485,7 @@ echo "Create Uninstall Script"
 deskpi_create_file $uninstall
 
 echo '#!/bin/bash' >> $uninstall
-echo 'daemonname='deskpi'' >> $uninstall
+echo "daemonname='deskpi'" >> $uninstall
 echo 'echo "------------------------------------------"' >> $uninstall
 echo 'echo "------- Deskpi UnInstallation Tool -------"' >> $uninstall
 echo 'echo "------------------------------------------"' >> $uninstall
@@ -503,15 +500,15 @@ echo '' >> $uninstall
 echo 'sleep 1' >> $uninstall
 echo '' >> $uninstall
 echo 'echo "Diable DeskPi Fan Control and PowerOff Service."' >> $uninstall
-echo 'systemctl disable $daemonname.service 2&>/dev/null' >> $uninstall
-echo 'systemctl stop $daemonname.service  2&>/dev/null' >> $uninstall
+echo 'systemctl disable $daemonname-default.service 2&>/dev/null' >> $uninstall
+echo 'systemctl stop $daemonname-default.service  2&>/dev/null' >> $uninstall
 echo 'systemctl disable $daemonname-poweroff.service 2&>/dev/null' >> $uninstall
 echo 'systemctl stop $daemonname-poweroff.service 2&>/dev/null' >> $uninstall
 echo 'echo "Successfully Disabled DeskPi Fan Control and PowerOff Service."' >> $uninstall
 echo '' >> $uninstall
 echo 'echo "Remove DeskPi Fan Control and PowerOff Service."' >> $uninstall
 echo 'rm -f  /storage/.config/system.d/$daemonname-poweroff.service 2&>/dev/null' >> $uninstall
-echo 'rm -f  /storage/.config/system.d/$daemonname.service  2&>/dev/null' >> $uninstall
+echo 'rm -f  /storage/.config/system.d/$daemonname-default.service  2&>/dev/null' >> $uninstall
 echo 'rm -f /storage/user/bin/$daemonname-fancontrol.py 2&>/dev/null' >> $uninstall
 echo 'rm -f /storage/user/bin/$daemonname-poweroff.py 2&>/dev/null' >> $uninstall
 echo 'rm -f /storage/user/bin/$daemonname-config 2&>/dev/null' >> $uninstall
@@ -557,10 +554,13 @@ echo "Installation of Deskpi Services and Daemons have Successfully finished"
 echo "DeskPi Service Load Modules."
 
 systemctl daemon-reload
-systemctl enable $daemonname.service
-systemctl start $daemonname.service
+systemctl enable $daemonname-default.service
+systemctl start $daemonname-default.service
 systemctl daemon-reload
-systemctl enable $daemonname.service
+systemctl enable $daemonname-hysteresis.service
+systemctl start $daemonname-hysteresis.service
+systemctl daemon-reload
+systemctl enable $daemonname-poweroff.service
 systemctl start $daemonname-poweroff.service
 
 echo -e "\e[31;40mSystemctl error\e[0m is because device\e[33;40m /dev/ttyUSB0\e[0m"
