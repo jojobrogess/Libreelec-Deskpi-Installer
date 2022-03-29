@@ -463,7 +463,7 @@ systemctl daemon-reload
 systemctl enable $daemonname.service
 systemctl start $daemonname.service
 systemctl daemon-reload
-systemctl enable $daemonname.service
+systemctl enable $daemonname-poweroff.service
 systemctl start $daemonname-poweroff.service
 
 echo -e "\e[31;40mSystemctl error\e[0m is because device\e[33;40m /dev/ttyUSB0\e[0m"
