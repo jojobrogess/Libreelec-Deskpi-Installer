@@ -158,26 +158,27 @@ echo '		sh -c "rm -f /storage/user/bin/deskpi.conf"' >> $daemonconfig
 echo '	fi' >> $daemonconfig
 echo '	touch /storage/user/bin/deskpi.conf' >> $daemonconfig
 echo '	chmod 777 /storage/user/bin/deskpi.conf' >> $daemonconfig
-echo '  echo "-----------------------------------------------------------------"' >> $daemonconfig
-echo '  echo "----------------- Custom Variable Fan Speed Tool ----------------"' >> $daemonconfig
-echo '  echo "-----------------------------------------------------------------"' >> $daemonconfig
+echo '	echo "-----------------------------------------------------------------"' >> $daemonconfig
+echo '	echo "----------------- Custom Variable Fan Speed Tool ----------------"' >> $daemonconfig
+echo '	echo "-----------------------------------------------------------------"' >> $daemonconfig
 echo '	echo "The following allows you to control the fan speed according to"' >> $daemonconfig
 echo '	echo "the temperature and fan speed you define."' >> $daemonconfig
-echo '  echo "-----------------------------------------------------------------"' >> $daemonconfig
+echo '	echo "-----------------------------------------------------------------"' >> $daemonconfig
 echo '	echo "You  will need to input 4 different temperature thresholds"' >> $daemonconfig
 echo '	echo "(for example: 30, 40, 50, 60)"' >> $daemonconfig
-echo '  echo "-----------------------------------------------------------------"' >> $daemonconfig
+echo '	echo "-----------------------------------------------------------------"' >> $daemonconfig
 echo '	echo "You will ALSO need to input 4 different Fan Speeds."' >> $daemonconfig
 echo '	echo "(for example 25, 50, 75, 100, these are the default values)"' >> $daemonconfig
-echo '  echo "You can define the speed level from 0-100."' >> $daemonconfig
-echo '  echo "PLEASE NOTE: setting the fan speed to below 50 can cause the"' >> $daemonconfig
-echo '  echo "Fan to produce a rattling sound."' >> $daemonconfig
-echo '  echo "-----------------------------------------------------------------"' >> $daemonconfig
+echo '	echo "You can define the speed level from 0-100."' >> $daemonconfig
+echo '	echo "PLEASE NOTE: setting the fan speed to below 50 can cause the"' >> $daemonconfig
+echo '	echo "Fan to produce a rattling sound."' >> $daemonconfig
+echo '	echo "-----------------------------------------------------------------"' >> $daemonconfig
 echo '	for i in `seq 1 4`;' >> $daemonconfig
 echo '	do' >> $daemonconfig
 echo '	echo -e "\e[32;40mCurrent CPU Temperature:\e[0m \e[31;40m$((CPU/1000))C\e[0m\n"' >> $daemonconfig
 echo '	read -p  "Temperature_threshold_$i:" temp' >> $daemonconfig
-echo '        read -p  "Fan_Speed level_$i:" fan_speed_level' >> $daemonconfig
+echo '	read -p  "Fan_Speed level_$i:" fan_speed_level' >> $daemonconfig
+echo '	fan_speed_level=$(printf %03d "$((10#$fan_speed_level))" )'
 echo '	sh -c "echo $temp" >> /storage/user/bin/deskpi.conf' >> $daemonconfig
 echo '	sh -c "echo $fan_speed_level" >> /storage/user/bin/deskpi.conf' >> $daemonconfig
 echo '	done ' >> $daemonconfig
