@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 import sys
 sys.path.append('/storage/.local/lib/python3.8/site-packages/')
 import serial as serial
@@ -17,22 +16,6 @@ tempSteps = data['args']['temp_steps']
 speedSteps = data['args']['speed_steps']
 hyst = data['args']['hysteresis']
 
-# WAIT_TIME = 1           # [s] Time to wait between each refresh
-# FAN_MIN = 20            # [%] Fan minimum speed.
-# PWM_FREQ = 25           # [Hz] Change this value if fan has strange behavior
-
-# Configurable temperature and fan speed steps
-# tempSteps = [30, 35]    # [°C]
-# speedSteps = [70, 100]   # [%]
-
-# Fan speed will change only if the difference of temperature is higher than hysteresis
-# hyst = 1
-
-# Setup GPIO pin
-#GPIO.setmode(GPIO.BCM)
-#GPIO.setup(FAN_PIN, GPIO.OUT, initial=GPIO.LOW)
-#fan = GPIO.PWM(FAN_PIN, PWM_FREQ)
-#fan.start(0)
 port = '/dev/ttyUSB0'
 baudrate = '9600'
 fan = serial.Serial(port, baudrate, timeout=30)
@@ -41,7 +24,6 @@ i = 0
 cpuTempOld = 0
 fanSpeedOld = 0
 
-# We must set a speed value for each temperature step
 if(len(speedSteps) != len(tempSteps)):
     print("Numbers of temp steps and speed steps are different")
     exit(0)
@@ -49,10 +31,8 @@ if(len(speedSteps) != len(tempSteps)):
 try:
     while (1):
         if fan.isOpen():
-            # Read CPU temperature
-            cpuTempFile = open("/sys/class/thermal/thermal_zone0/temp", "r")
-            cpuTemp = float(cpuTempFile.read()) / 1000
-            cpuTempFile.close()
+            cpu_temp = subprocess.getoutput('vcgencmd measure_temp|awk -F\'=\' \'{print \$2\'}')
+            cpu_temp=int(cpu_temp.split('.')[0])
 
             # Calculate desired fan speed
             if(abs(cpuTemp-cpuTempOld > hyst)):
@@ -73,8 +53,8 @@ try:
 
                 if((fanSpeed != fanSpeedOld)):
                     if((fanSpeed != fanSpeedOld) and ((fanSpeed >= FAN_MIN) or (fanSpeed == 0))):
-                        #fan.ChangeDutyCycle(fanSpeed)
-                        fan.write(b'fanSpeed')                    
+                        fanSpeed = bytes(str("pwm_%03d" % fanSpeed), 'utf-8')
+                        fan.write(fanSpeed)                    
                         fanSpeedOld = fanSpeed
 
             # Wait until next refresh

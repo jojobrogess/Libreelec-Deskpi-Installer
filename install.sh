@@ -7,10 +7,12 @@
 daemonname="deskpi"
 userlibrary=/storage/user/
 daemonconfig=/storage/user/bin/$daemonname-config
-daemonspowerervice=/storage/.config/system.d/$daemonname-poweroff.service
-daemonfanservice=/storage/.config/system.d/$daemonname.service
+defaultdriver=/storage/user/bin/$daemonname-defaultcontrol.py
+daemonfanservice=/storage/.config/system.d/$daemonname-default.service
+hysteresisdriver=//storage/user/bin/$daemonname-hysteresiscontrol.py
+daemonhysteresisservice=/storage/.config/system.d/$daemonname-hysteresis.service
 powerbutton=/storage/user/bin/$daemonname-poweroff.py
-defaultdriver=/storage/user/bin/$daemonname-fancontrol.py
+daemonspowerervice=/storage/.config/system.d/$daemonname-poweroff.service
 uninstall=/storage/user/bin/$daemonname-uninstall
 ################################################################
 ################################################################
@@ -148,8 +150,8 @@ echo 'serial_port=/dev/ttyUSB0' >> $daemonconfig
 echo 'TEMP=/sys/class/thermal/thermal_zone0/temp' >> $daemonconfig
 echo 'CPU=`head -n 1 $TEMP`' >> $daemonconfig
 echo '' >> $daemonconfig
-echo '# Stop deskpi.service so that user can define the speed level.' >> $daemonconfig
-echo 'systemctl stop deskpi.service' >> $daemonconfig
+echo '# Stop deskpi-default.service so that user can define the speed level.' >> $daemonconfig
+echo 'systemctl stop deskpi-default.service' >> $daemonconfig
 echo '' >> $daemonconfig
 echo '# Define the function of set_config' >> $daemonconfig
 echo 'function set_config() {' >> $daemonconfig
@@ -193,61 +195,68 @@ echo 'echo "Please select the Fan Speed level you want or Enable variable "' >> 
 echo 'echo "Fan Speed, to set the Fan Speed according to Cpu Temperature."' >> $daemonconfig
 echo 'echo "Or create custom Variables for Fan Speeds according to Cpu Temps."' >> $daemonconfig
 echo 'echo "-----------------------------------------------------------------"' >> $daemonconfig
-echo 'echo "1 - Set the Fan Speed to 50%"' >> $daemonconfig
-echo 'echo "2 - Set the Fan Speed to 65%"' >> $daemonconfig
-echo 'echo "3 - Set the Fan Speed to 75%"' >> $daemonconfig
-echo 'echo "4 - Set the Fan Speed to 90%"' >> $daemonconfig
-echo 'echo "5 - Set the Fan Speed to 100%"' >> $daemonconfig
-echo 'echo "6 - Turn off the Fan"' >> $daemonconfig
-echo 'echo "7 - Enable default Variable Fan Speed Control"' >> $daemonconfig
-echo 'echo "8 - Create custom config Fan Speed according to Cpu Temperature"' >> $daemonconfig
-echo 'echo "9 - Exit Deskpi-Config Utility"' >> $daemonconfig
+echo 'echo "1 - Enable default Variable Fan Speed Control"' >> $daemonconfig
+echo 'echo "2 - Create custom config Fan Speed according to Cpu Temperature"' >> $daemonconfig
+echo 'echo "3 - Create custom config Fan Speed according to Cpu Temperature"' >> $daemonconfig
+echo 'echo "5 - Set the Fan Speed to 50%"' >> $daemonconfig
+echo 'echo "6 - Set the Fan Speed to 65%"' >> $daemonconfig
+echo 'echo "7 - Set the Fan Speed to 75%"' >> $daemonconfig
+echo 'echo "8 - Set the Fan Speed to 90%"' >> $daemonconfig
+echo 'echo "9 - Set the Fan Speed to 100%"' >> $daemonconfig
+echo 'echo "10 - Turn off the Fan"' >> $daemonconfig
+echo 'echo "11 - Exit Deskpi-Config Utility"' >> $daemonconfig
 echo 'echo "-----------------------------------------------------------------"' >> $daemonconfig
 echo 'echo "Input Number and Press Enter."' >> $daemonconfig
 echo 'read -p "Your choice:" levelNumber' >> $daemonconfig
 echo 'case $levelNumber in' >> $daemonconfig
 echo '	1) ' >> $daemonconfig
+echo '	   echo "Enabled Default Variable Fan Speed Control values"' >> $daemonconfig
+echo '	   echo "Default values are located at (/storage/user/bin/deskpi-defaultcontrol.py)"' >> $daemonconfig
+echo '	   systemctl stop deskpi-default.service &' >> $daemonconfig
+echo '	   ;;' >> $daemonconfig
+echo '	2) ' >> $daemonconfig
+echo '	   echo "Enabled Custom variable Fan Speed according to CPU Temperature"' >> $daemonconfig
+echo '	   systemctl stop deskpi-default.service & ' >> $daemonconfig
+echo '	   set_config' >> $daemonconfig
+echo '	   systemctl start deskpi-default.service & ' >> $daemonconfig
+echo '	   ;;' >> $daemonconfig
+echo '	3) ' >> $daemonconfig
+echo '	   echo "Enabled Default Hysteresis Fan Control according to CPU Temperature"' >> $daemonconfig
+echo '	   systemctl stop deskpi-default.service & ' >> $daemonconfig
+echo '	   set_config' >> $daemonconfig
+echo '	   systemctl start deskpi-default.service & ' >> $daemonconfig
+echo '	   ;;' >> $daemonconfig
+echo '	5) ' >> $daemonconfig
 echo '	   echo "You have selected 50% fan speed"' >> $daemonconfig
 echo '	   sh -c "echo pwm_050 > $serial_port"' >> $daemonconfig
 echo '	   echo "Fan speed has been change to 50%"' >> $daemonconfig
 echo '	   ;;' >> $daemonconfig
-echo '	2) ' >> $daemonconfig
+echo '	6) ' >> $daemonconfig
 echo '	   echo "You have selected 65% fan speed"' >> $daemonconfig
 echo '	   sh -c "echo pwm_065 > $serial_port"' >> $daemonconfig
 echo '	   echo "Fan speed has been change to 65%"' >> $daemonconfig
 echo '	   ;;' >> $daemonconfig
-echo '	3) ' >> $daemonconfig
+echo '	7) ' >> $daemonconfig
 echo '	   echo "You have selected 75% fan speed"' >> $daemonconfig
 echo '	   sh -c "echo pwm_075 > $serial_port"' >> $daemonconfig
 echo '	   echo "Fan speed has been change to 75%"' >> $daemonconfig
 echo '	   ;;' >> $daemonconfig
-echo '	4) ' >> $daemonconfig
+echo '	8) ' >> $daemonconfig
 echo '	   echo "You have selected 90% fan speed"' >> $daemonconfig
 echo '	   sh -c "echo pwm_090 > $serial_port"' >> $daemonconfig
 echo '	   echo "Fan speed has been change to 90%"' >> $daemonconfig
 echo '	   ;;' >> $daemonconfig
-echo '	5) ' >> $daemonconfig
+echo '	9) ' >> $daemonconfig
 echo '	   echo "You have selected 100% fan speed"' >> $daemonconfig
 echo '	   sh -c "echo pwm_100 > $serial_port"' >> $daemonconfig
 echo '	   echo "Fan speed has been change to 100%"' >> $daemonconfig
 echo '	   ;;' >> $daemonconfig
-echo '	6) ' >> $daemonconfig
+echo '	10) ' >> $daemonconfig
 echo '	   echo "Turn off fan"' >> $daemonconfig
 echo '	   sh -c "echo pwm_000 > $serial_port"' >> $daemonconfig
 echo '	   echo "Fan has been turned off."' >> $daemonconfig
 echo '	   ;;' >> $daemonconfig
-echo '	7) ' >> $daemonconfig
-echo '	   echo "Enabled Default Variable Fan Speed values"' >> $daemonconfig
-echo '	   echo "Default values are located at (/storage/user/bin/deskpi-fancontrol.py)"' >> $daemonconfig
-echo '	   systemctl stop deskpi.service &' >> $daemonconfig
-echo '	   ;;' >> $daemonconfig
-echo '	8) ' >> $daemonconfig
-echo '	   echo "Enabled Custom variable Fan Speed according to CPU Temperature"' >> $daemonconfig
-echo '	   systemctl stop deskpi.service & ' >> $daemonconfig
-echo '	   set_config' >> $daemonconfig
-echo '	   systemctl start deskpi.service & ' >> $daemonconfig
-echo '	   ;;' >> $daemonconfig
-echo '  9)' >> $daemonconfig
+echo '  11)' >> $daemonconfig
 echo '	   echo "Exiting Deskpi-Config"' >> $daemonconfig
 echo '	   echo "Have a Great Day!"' >> $daemonconfig
 echo '	   ;;' >> $daemonconfig
@@ -306,9 +315,8 @@ chmod 755 $defaultdriver
 
 echo "Successfully Created Default Driver Daemon"
 
-
 ############################
-#####Build Fan Service######
+##Build Default Fan Service#
 ############################
 
 echo "Building Fan Service"
@@ -321,11 +329,100 @@ echo 'After=multi-user.target' >> $daemonfanservice
 echo '[Service]' >> $daemonfanservice
 echo 'Type=simple' >> $daemonfanservice
 echo 'RemainAfterExit=no' >> $daemonfanservice
-echo 'ExecStart=/bin/sh -c ". /etc/profile; exec /usr/bin/python /storage/user/bin/deskpi-fancontrol.py; exec /storage/user/bin/deskpi.conf"' >> $daemonfanservice
+echo 'ExecStart=/bin/sh -c ". /etc/profile; exec /usr/bin/python /storage/user/bin/deskpi-defaultcontrol.py; exec /storage/user/bin/deskpi.conf"' >> $daemonfanservice
 echo '[Install]' >> $daemonfanservice
 echo 'WantedBy=multi-user.target' >> $daemonfanservice
 
 chmod 644 $daemonfanservice
+
+echo "Successfully Built Fan Service"
+
+#############################
+#Create Default Driver Daemon
+#############################
+
+echo "Create Fan Hysteresis Driver Daemon"
+
+deskpi_create_file $hysteresisdriver
+
+echo '#!/usr/bin/python' >> $hysteresisdriver
+echo 'import sys' >> $hysteresisdriver
+echo 'sys.path.append('/storage/.local/lib/python3.8/site-packages/')' >> $hysteresisdriver
+echo 'import serial as serial' >> $hysteresisdriver
+echo 'import json' >> $hysteresisdriver
+echo 'import time' >> $hysteresisdriver
+echo 'import os' >> $hysteresisdriver
+echo '# Configuration' >> $hysteresisdriver
+echo 'with open(os.path.join(sys.path[0], 'fan.json')) as f:' >> $hysteresisdriver
+echo '    data = json.load(f)' >> $hysteresisdriver
+echo 'WAIT_TIME = data['args']['wait_time']' >> $hysteresisdriver
+echo 'FAN_MIN = data['args']['fan_min']' >> $hysteresisdriver
+echo 'tempSteps = data['args']['temp_steps']' >> $hysteresisdriver
+echo 'speedSteps = data['args']['speed_steps']' >> $hysteresisdriver
+echo 'hyst = data['args']['hysteresis']' >> $hysteresisdriver
+echo 'port = '/dev/ttyUSB0'' >> $hysteresisdriver
+echo 'baudrate = '9600'' >> $hysteresisdriver
+echo 'fan = serial.Serial(port, baudrate, timeout=30)' >> $hysteresisdriver
+echo 'i = 0' >> $hysteresisdriver
+echo 'cpuTempOld = 0' >> $hysteresisdriver
+echo 'fanSpeedOld = 0' >> $hysteresisdriver
+echo 'if(len(speedSteps) != len(tempSteps)):' >> $hysteresisdriver
+echo '    print("Numbers of temp steps and speed steps are different")' >> $hysteresisdriver
+echo '    exit(0)' >> $hysteresisdriver
+echo 'try:' >> $hysteresisdriver
+echo '    while (1):' >> $hysteresisdriver
+echo '        if fan.isOpen():' >> $hysteresisdriver
+echo '            cpu_temp = subprocess.getoutput('vcgencmd measure_temp|awk -F\'=\' \'{print \$2\'}')' >> $hysteresisdriver
+echo '            cpu_temp=int(cpu_temp.split('.')[0])' >> $hysteresisdriver
+echo '            # Calculate desired fan speed' >> $hysteresisdriver
+echo '            if(abs(cpuTemp-cpuTempOld > hyst)):' >> $hysteresisdriver
+echo '                # Below first value, fan will run at min speed.' >> $hysteresisdriver
+echo '                if(cpuTemp < tempSteps[0]):' >> $hysteresisdriver
+echo '                    fanSpeed = speedSteps[0]' >> $hysteresisdriver
+echo '                # Above last value, fan will run at max speed' >> $hysteresisdriver
+echo '                elif(cpuTemp >= tempSteps[len(tempSteps)-1]):' >> $hysteresisdriver
+echo '                    fanSpeed = speedSteps[len(tempSteps)-1]' >> $hysteresisdriver
+echo '                # If temperature is between 2 steps, fan speed is calculated by linear interpolation' >> $hysteresisdriver
+echo '                else:' >> $hysteresisdriver
+echo '                    for i in range(0, len(tempSteps)-1):' >> $hysteresisdriver
+echo '                        if((cpuTemp >= tempSteps[i]) and (cpuTemp < tempSteps[i+1])):' >> $hysteresisdriver
+echo '                            fanSpeed = round((speedSteps[i+1]-speedSteps[i])/(tempSteps[i+1]-tempSteps[i])*(cpuTemp-tempSteps[i])+speedSteps[i],1)' >> $hysteresisdriver
+echo '                if((fanSpeed != fanSpeedOld)):' >> $hysteresisdriver
+echo '                    if((fanSpeed != fanSpeedOld) and ((fanSpeed >= FAN_MIN) or (fanSpeed == 0))):' >> $hysteresisdriver
+echo '                        fanSpeed = bytes(str("pwm_%03d" % fanSpeed), 'utf-8')' >> $hysteresisdriver
+echo '                        fan.write(fanSpeed)                    ' >> $hysteresisdriver
+echo '                        fanSpeedOld = fanSpeed' >> $hysteresisdriver
+echo '            # Wait until next refresh' >> $hysteresisdriver
+echo '            time.sleep(WAIT_TIME)' >> $hysteresisdriver
+echo '# If a keyboard interrupt occurs (ctrl + c)' >> $hysteresisdriver
+echo 'except(KeyboardInterrupt):' >> $hysteresisdriver
+echo '    print("Fan ctrl interrupted by keyboard")' >> $hysteresisdriver
+echo "    fan.write(b'pwm_000')" >> $hysteresisdriver
+echo '    fan.close()' >> $hysteresisdriver
+
+chmod 755 $hysteresisdriver
+
+echo "Successfully Created Hysteresis Driver Daemon"
+
+############################
+##Build Default Fan Service#
+############################
+
+echo "Building Fan Service"
+
+deskpi_create_file $daemonhysteresisservice
+
+echo '[Unit]' >> $daemonhysteresisservice
+echo 'Description=DeskPi_Fan_Service' >> $daemonhysteresisservice
+echo 'After=multi-user.target' >> $daemonhysteresisservice
+echo '[Service]' >> $daemonhysteresisservice
+echo 'Type=simple' >> $daemonhysteresisservice
+echo 'RemainAfterExit=no' >> $daemonhysteresisservice
+echo 'ExecStart=/bin/sh -c ". /etc/profile; exec /usr/bin/python /storage/user/bin/deskpi-hysteresiscontrol.py; exec /storage/user/bin/deskpi.json"' >> $daemonhysteresisservice
+echo '[Install]' >> $daemonhysteresisservice
+echo 'WantedBy=multi-user.target' >> $daemonhysteresisservice
+
+chmod 644 $daemonhysteresisservice
 
 echo "Successfully Built Fan Service"
 

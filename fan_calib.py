@@ -27,11 +27,13 @@ cpuTempOld = 0
 
 try:
     while 1:
-        fanSpeed = float(input("Fan Speed: "))
-        fan.write(b'fanSpeed')
-
+        fanSpeed = int(input("Fan Speed: "))
+        fanSpeed = bytes(str("pwm_%03d" % fanSpeed), 'utf-8')
+        print('You input the string:', fanSpeed)
+        fan.write(fanSpeed)
 
 except(KeyboardInterrupt):
     print("Fan ctrl interrupted by keyboard")
-    GPIO.cleanup()
+    fan.write(b'pwm_000')
+    fan.close()
     sys.exit()
