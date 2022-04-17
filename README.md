@@ -1,5 +1,7 @@
 # Libreelec-Deskpi-Installer
 This is a single installer script for the Deskpi Pro case.
+
+ADDON VERSION HERE: https://github.com/jojobrogess/script.deskpifanservice
 ************************************************************************************************************************************
 ## !!!PREFACE!!!:
 I have absolutely **NO** idea what I'm doing. 
