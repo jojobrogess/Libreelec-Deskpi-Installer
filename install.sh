@@ -21,12 +21,12 @@ echo " Pyserial is a dependency of this addon."
 echo "------------------------------------------"
 echo "As such, it NEEDS to be installed for"
 echo "the services to work correctly."
-echo -n "Press Y to Install Pyserial:"
+echo -n "Press Y to Install Pyserial: "
 read -n 1 confirm
+confirm=$(echo "$confirm" | tr 'y' 'Y')
 
-if [ "$confirm" = "y" ]
+if [ "$confirm" = "Y" ]
 then
-        confirm="Y"
         echo "Downloading pyserial to Home Directory"
         echo "/storage/"
 		cd ~/
