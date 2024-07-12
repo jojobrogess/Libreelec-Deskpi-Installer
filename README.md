@@ -1,3 +1,10 @@
+THIS REPO IS OBSOLETE! 
+
+PLEASE INSTALL THROUGH ADDON INSTEAD OF SSH, GO TO: https://github.com/jojobrogess/script.deskpifanservice/tree/main
+
+Or Add Repo through Kodi File Manager Source: https://jojobrogess.github.io/repository.deskpi/
+************************************************************************************************************************************
+************************************************************************************************************************************
 # Libreelec-Deskpi-Installer
 This is a single installer script for the Deskpi Pro case.
 
